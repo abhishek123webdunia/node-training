@@ -26,25 +26,16 @@ router.post("/edit/:id", function(req, res){
    info.name = req.body.name;
    info.email = req.body.email;
 
-   let query = {id:req.params.id}
+   let query = {_id:req.params.id}
 
    User.findByIdAndUpdate(query,info, function (err, result) {
     if (err) {
     console.log(err);
   } else {
    console.log("User Updated successfully");
-   res.render('dashboard');
+   res.redirect('/dashboard');
   }
 }); 
-});
-
-app.put('/edit/:id', (req, res) => {
-  const postEdit = {name: req.body.name, email: req.body.email};
-  Post.findByIdAndUpdate(req.params.id, postEdit, (err, post) => {
-    if(!err){
-     res.render('edit');
-    }
-  });
 });
   
 // Register
@@ -122,20 +113,29 @@ router.post('/login', (req, res, next) => {
 });
 
 router.get('/delete/:id', (req, res) => {
-  let query = {id:req.params.id};
+  let query = {_id:req.params.id};
   User.deleteOne(query,function(err){
     if(err){
       console.log(err);
+    }else{
+      return res.redirect('/dashboard');
     }
-    res.redirect('/dashboard');
   })
 });
 
 // Logout
 router.get('/logout', (req, res) => {
-  req.logout();
-  req.flash('success_msg', 'You are logged out');
-  res.redirect('/users/login');
+  console.log("logout")
+	if (req.session) {
+    // delete session object
+    req.session.destroy(function (err) {
+    	if (err) {
+    		return next(err);
+    	} else {
+    		return res.redirect('/users/login');
+    	}
+    });
+}
 });
 
 module.exports = router;

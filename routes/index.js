@@ -6,15 +6,13 @@ const User = require('../models/User');
 router.get('/', forwardAuthenticated, (req, res) => res.render('welcome'));
 
 // Dashboard
-router.get('/dashboard', ensureAuthenticated, (req, res) => {
+router.get('/dashboard', (req, res) => {
   var users = User.find({});
 	users.exec(function(err,data){
 	if(err) throw err
-		res.render('dashboard', { title: 'User Records', results:data })
+		res.render('dashboard', { results:data })
 		  });
     });
 
-
-
-
+	
 module.exports = router;
