@@ -38,14 +38,17 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
     secret: 'secret',
-    resave: true,
-    saveUninitialized: true
+    resave: false,
+    saveUninitialized: true,
+    duration: 30 * 60 * 1000,
+    activeDuration: 5 * 60 * 1000
   })
 );
 
 // Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
+
 
 // Connect flash
 app.use(flash());

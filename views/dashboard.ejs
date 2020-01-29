@@ -1,7 +1,6 @@
 <h1 class="mt-4">Dashboard</h1>
-<p class="lead mb-3">Welcome <%= results[0].name %> %></p>
+<p class="lead mb-3">Welcome <%= results[0].name %></p>
 <a href="/users/logout" class="btn btn-secondary">Logout</a>
-
 <div>
     <h3 align="center">Users List</h3>
     </div>
@@ -22,7 +21,7 @@
          <td><%= row.name %></td>
           <td><%= row.email %></td>
            <td><%= row.date %></td>
-            <td> 
+           <td>
            <a href="/users/edit/<%= row.id %>"> Edit </a>
              <a href="/users/delete/<%= row.id %>" class="delete-article" > Delete </a>
            </td>

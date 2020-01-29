@@ -2,9 +2,11 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
+const jwt = require("jsonwebtoken");
 // Load User model
 const User = require('../models/User');
 const { forwardAuthenticated } = require('../config/auth');
+const config = require('../config/config');
 
 // Login Page
 router.get('/login', forwardAuthenticated, (req, res) => res.render('login'));
@@ -31,12 +33,12 @@ router.post("/edit/:id", function(req, res){
    User.findByIdAndUpdate(query,info, function (err, result) {
     if (err) {
     console.log(err);
-  } else {
+    } else {
    console.log("User Updated successfully");
    res.redirect('/dashboard');
-  }
-}); 
-});
+    }
+  }); 
+  });
   
 // Register
 router.post('/register', (req, res) => {
@@ -105,12 +107,27 @@ router.post('/register', (req, res) => {
 
 // Login
 router.post('/login', (req, res, next) => {
-  passport.authenticate('local', {
-    successRedirect: '/dashboard',
-    failureRedirect: '/users/login',
-    failureFlash: true
-  })(req, res, next);
+  User.findOne({ email: req.body.email }, function (err, user) {
+  
+    if (err) return res.status(500).send('Error on the server.');
+    if (!user) return res.status(404).send('No user found.');
+    
+    var passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
+    if (!passwordIsValid) return res.status(401).send({ auth: false, token: null });
+    
+    var token = jwt.sign({ id: user._id }, config.secret, {
+      expiresIn: 86400 // expires in 24 hours
+    });
+    res.status(200).send({ auth: true, token: token });
+   });
+  
 });
+
+//passport.authenticate('local', {
+  //successRedirect: '/dashboard',
+  //failureRedirect: '/users/login',
+  //failureFlash: true
+//})(req, res, next);
 
 router.get('/delete/:id', (req, res) => {
   let query = {_id:req.params.id};
@@ -123,19 +140,37 @@ router.get('/delete/:id', (req, res) => {
   })
 });
 
+router.get('/status/:id', (req, res) => {
+  User.findByIdAndUpdate(req.params.id,function(err,results){
+    res.render('dashboard',{
+      results:results
+    });
+  });
+});
+
+router.post("/status/:id", function(req, res){
+  let infos = {};
+   
+   info.status = 'inactive';
+
+   let querys = {_id:req.params.id}
+     console/log(querys);
+
+   User.updateOne(querys,infos, function (err, results) {
+    if (err) {
+    console.log(err);
+    } else {
+   console.log("status Updated successfully");
+   res.redirect('/dashboard');
+    }
+  }); 
+  });
+
 // Logout
 router.get('/logout', (req, res) => {
-  console.log("logout")
-	if (req.session) {
-    // delete session object
-    req.session.destroy(function (err) {
-    	if (err) {
-    		return next(err);
-    	} else {
-    		return res.redirect('/users/login');
-    	}
-    });
-}
+  req.logout();
+  req.flash('success_msg', 'You are logged out');
+  res.redirect('/users/login');
 });
 
 module.exports = router;
