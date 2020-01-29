@@ -127,7 +127,10 @@ router.post("/edit/:id", function(req, res){
       var decoded = jwt.verify(token,config.secret);
       if(decoded){
         console.log("User Updated successfully");
-        errors.push({ msg: 'User Updated successfully' });
+        req.flash(
+          'success_msg',
+          'User Updated successfully'
+        );
         res.redirect(req.get('referer'));
       }else{
         console.log(err);
@@ -148,6 +151,10 @@ router.get('/delete/:id', (req, res) => {
       var decoded = jwt.verify(token,config.secret);
       console.log(decoded);
        if(decoded){
+		 req.flash(
+          'success_msg',
+          'Delete User Successfully.....!'
+         );   
         return res.redirect(req.get('referer'));
        }else{
          res.send({status:400});
