@@ -24,7 +24,7 @@ router.get("/edit/:id", function(req, res){
 
 router.post("/edit/:id", function(req, res){
   let info = {};
-   
+  let errors = [];
    info.name = req.body.name;
    info.email = req.body.email;
 
@@ -37,11 +37,12 @@ router.post("/edit/:id", function(req, res){
       var decoded = jwt.verify(token,config.secret);
       if(decoded){
         console.log("User Updated successfully");
-        res.redirect(`/dashboard/${decoded.id}`);
+        errors.push({ msg: 'User Updated successfully' });
+        res.redirect(req.get('referer'));
       }else{
         console.log(err);
       }
-    }); 
+  }); 
   });
   
 // Register
@@ -134,9 +135,7 @@ router.post('/login', (req, res, next) => {
   
 });
 
-
 router.get('/delete/:id', (req, res) => {
-
   User.deleteOne({ _id:req.params.id }, function (err, user) {
     if (err) return res.status(500).send('Error on the server.');
     if (!user) return res.status(404).send('No user delete.');
@@ -148,14 +147,12 @@ router.get('/delete/:id', (req, res) => {
       var decoded = jwt.verify(token,config.secret);
       console.log(decoded);
        if(decoded){
-        return res.redirect(`/dashboard/${decoded.id}`);
+        return res.redirect(req.get('referer'));
        }else{
          res.send({status:400});
        }
      });
-
 });
-
 
 // Logout
 router.get('/logout', (req, res) => {

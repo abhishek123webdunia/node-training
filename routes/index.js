@@ -12,9 +12,9 @@ router.get('/dashboard/:token', (req, res) => {
     decoded = jwt.verify(req.params.token,config.secret);
      if(decoded.role == "admin"){
     var users = User.find({});
-	users.exec(function(err,data){
+	users.exec(function(err,decoded){
 	if(err) throw err
-		res.render('dashboard', { results:data })
+		res.render('dashboard', { results:decoded })
 		  });
    	}else{
         res.send({Status:"FALSE"});
