@@ -1,3 +1,9 @@
+<script>
+function clickval()
+{
+  alert("User Updated successfully");
+}
+</script>
 <div class="row mt-5">
     <div class="col-md-6 m-auto">
       <div class="card card-body">
@@ -28,7 +34,7 @@
               value="<%= results.email %>"
             />
           </div>
-          <button type="submit" class="btn btn-primary btn-block">
+          <button type="submit" class="btn btn-primary btn-block" onclick="clickval()" >
             Update
           </button>
         </form>
